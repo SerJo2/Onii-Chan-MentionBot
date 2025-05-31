@@ -25,6 +25,10 @@ async def get_text_messages(message):
                 k = "@" + j
                 send = send + k + " "
             await bot.send_message(message.chat.id, send)
+    if message.text == "/ping":
+        await bot.send_message(message.chat.id, "Бот работает")
+    if message.text == "/help":
+        await bot.send_message(message.chat.id, "/all - Пинг всех в группе \n /ping - Проверка онлайна бота")
 
 
 asyncio.run(bot.polling())

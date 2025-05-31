@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5686ce53-5b27-4bd3-ae2d-df9e57bdb696" name="Changes" comment="add /ping, /help">
+    <list default="true" id="5686ce53-5b27-4bd3-ae2d-df9e57bdb696" name="Changes" comment="add try...except for unhandled errors. Add check for my chat id">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/get_chat_members.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_chat_members.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -123,12 +123,21 @@
       <option name="project" value="LOCAL" />
       <updated>1748654051060</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add try...except for unhandled errors. Add check for my chat id">
+      <option name="closed" value="true" />
+      <created>1748686527741</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748686527741</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="add /ping, /help" />
-    <option name="LAST_COMMIT_MESSAGE" value="add /ping, /help" />
+    <MESSAGE value="add try...except for unhandled errors. Add check for my chat id" />
+    <option name="LAST_COMMIT_MESSAGE" value="add try...except for unhandled errors. Add check for my chat id" />
   </component>
 </project>

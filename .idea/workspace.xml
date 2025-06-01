@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5686ce53-5b27-4bd3-ae2d-df9e57bdb696" name="Changes" comment="change print to logging">
-      <change afterPath="$PROJECT_DIR$/_service/version.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="5686ce53-5b27-4bd3-ae2d-df9e57bdb696" name="Changes" comment="version file">
+      <change afterPath="$PROJECT_DIR$/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +138,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748687141299</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="version file">
+      <option name="closed" value="true" />
+      <created>1748805134074</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1748805134074</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -146,6 +154,7 @@
     <MESSAGE value="add /ping, /help" />
     <MESSAGE value="add try...except for unhandled errors. Add check for my chat id" />
     <MESSAGE value="change print to logging" />
-    <option name="LAST_COMMIT_MESSAGE" value="change print to logging" />
+    <MESSAGE value="version file" />
+    <option name="LAST_COMMIT_MESSAGE" value="version file" />
   </component>
 </project>

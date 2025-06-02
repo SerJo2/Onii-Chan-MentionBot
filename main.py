@@ -3,6 +3,7 @@ from logging import fatal
 from prefs import *
 from get_chat_members import get_chat_members
 
+import requests
 import asyncio
 import logger
 import pytz

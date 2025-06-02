@@ -97,11 +97,9 @@ async def callback_inline(call):
 
     if "today" in call.data:
         data['Time'] = current_date
-        print('hui' +current_date)
         tableList = get_timetable_list()
         yesLessons = False
         for i in tableList:
-            print(i[:10])
             if i[:10] == current_date:
                 yesLessons = True
                 await bot.send_message(call.message.chat.id,
@@ -112,11 +110,9 @@ async def callback_inline(call):
 
     elif "tomorrow" in call.data:
         data['Time'] = tomorrow_date
-        print('hui' +  tomorrow_date)
         tableList = get_timetable_list()
         yesLessons = False
         for i in tableList:
-            print(i[:10])
             if i[:10] == tomorrow_date:
                 yesLessons = True
                 await bot.send_message(call.message.chat.id,

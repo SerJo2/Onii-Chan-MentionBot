@@ -18,12 +18,11 @@ from telebot import types
 from logger import baseLogger
 
 
-tz = pytz.timezone('Europe/Moscow')
+tz = pytz.timezone('Asia/Vladivostok')
 khabarovskTime = datetime.now(tz)
 current_date = khabarovskTime.strftime('%d.%m.%Y')
-
-data['Time'] = khabarovskTime
-
+data['Time'] = current_date
+print(current_date)
 baseLogger.info("Main.py started")
 API_TOKEN = token
 
@@ -78,10 +77,8 @@ async def get_text_messages(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 async def callback_inline(call):
-    global tz
     global khabarovskTime
     global current_date
-    tz = pytz.timezone('Europe/Moscow')
 
     khabarovskTime = datetime.now(tz)
     current_date = khabarovskTime.strftime('%d.%m.%Y')  # Текущая дата в Хабре

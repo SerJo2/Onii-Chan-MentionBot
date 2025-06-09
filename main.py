@@ -92,7 +92,6 @@ async def callback_inline(call):
         msg_thread_id = "General"
 
 
-
     if "today" in call.data:
         data['Time'] = current_date
         tableList = get_timetable_list()
@@ -104,7 +103,7 @@ async def callback_inline(call):
                                 i, message_thread_id=msg_thread_id)
         if not yesLessons:
             await bot.send_message(call.message.chat.id,
-                                   "Кажись пар нету", message_thread_id=msg_thread_id)
+                                   current_date + ": " + "Кажись пар нету", message_thread_id=msg_thread_id)
 
     elif "tomorrow" in call.data:
         data['Time'] = tomorrow_date
@@ -117,14 +116,15 @@ async def callback_inline(call):
                                  i, message_thread_id=msg_thread_id)
         if not yesLessons:
             await bot.send_message(call.message.chat.id,
-                                   "Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tomorrow_date + ": " +"Кажись пар нету", message_thread_id=msg_thread_id)
 
 def get_timetable_list():
+    print("1")
     responseTimetable = requests.post('https://www.dvgups.ru/index.php', params=params, cookies=cookies, headers=headers, data=data)
     table = responseTimetable.text
 
     printed_list = []
-
+    print("2")
     root = BeautifulSoup(table, 'html.parser')
     all_dates = root.find_all('h3')
     trs = root.find_all('table')

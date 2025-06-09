@@ -86,6 +86,8 @@ async def callback_inline(call):
     tomorrow_date = khabarovskTime + timedelta(days=1)
     tomorrow_date = tomorrow_date.strftime('%d.%m.%Y')
 
+    tag = "@" + call.message.chat.username
+
     try:
         msg_thread_id = call.message.reply_to_message.message_thread_id
     except AttributeError:
@@ -103,7 +105,7 @@ async def callback_inline(call):
                                 i, message_thread_id=msg_thread_id)
         if not yesLessons:
             await bot.send_message(call.message.chat.id,
-                                   current_date + ": " + "Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tag + "\n\n" + current_date + ": " + "Кажись пар нету", message_thread_id=msg_thread_id)
 
     elif "tomorrow" in call.data:
         data['Time'] = tomorrow_date
@@ -116,7 +118,7 @@ async def callback_inline(call):
                                  i, message_thread_id=msg_thread_id)
         if not yesLessons:
             await bot.send_message(call.message.chat.id,
-                                   tomorrow_date + ": " +"Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tag + "\n\n" + tomorrow_date + ": " +"Кажись пар нету", message_thread_id=msg_thread_id)
 
 def get_timetable_list():
     print("1")

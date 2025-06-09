@@ -86,8 +86,7 @@ async def callback_inline(call):
     tomorrow_date = khabarovskTime + timedelta(days=1)
     tomorrow_date = tomorrow_date.strftime('%d.%m.%Y')
 
-    tag = "@" + call.message.chat.username
-
+    tag = "@" + str(call.from_user.username)
     try:
         msg_thread_id = call.message.reply_to_message.message_thread_id
     except AttributeError:

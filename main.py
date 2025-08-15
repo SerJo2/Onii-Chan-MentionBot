@@ -15,9 +15,10 @@ from tabulate import tabulate
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 
-
 from logger import baseLogger
 
+
+##  telegram bot set_my_commands
 
 tz = pytz.timezone('Asia/Vladivostok')
 khabarovskTime = datetime.now(tz)
@@ -26,7 +27,6 @@ data['Time'] = current_date
 print(current_date)
 baseLogger.info("Main.py started")
 API_TOKEN = token
-
 bot = AsyncTeleBot(API_TOKEN)
 baseLogger.info("Bot was set up")
 @bot.message_handler(content_types=['text'])
@@ -41,7 +41,7 @@ async def get_text_messages(message):
             msg_thread_id = "General"
 
 
-        if message.text == "/all":
+        if message.text == "/all@OniiChanMentionBot":
             chat_members = await get_chat_members(message.chat.id)
             baseLogger.info("chat_members: " + str(chat_members))
             for i in range(1, len(chat_members), 5):
@@ -51,12 +51,12 @@ async def get_text_messages(message):
                     k = "@" + j
                     send = send + k + " "
                 await bot.send_message(message.chat.id, send, message_thread_id=msg_thread_id)
-        if message.text == "/ping":
+        if message.text == "/ping@OniiChanMentionBot":
             await bot.send_message(message.chat.id, "Бот работает", message_thread_id=msg_thread_id)
-        if message.text == "/ocHelp":
-            await bot.send_message(message.chat.id, "/all - Пинг всех в группе \n/ping - Проверка онлайна бота \n/tt - Расписание", message_thread_id=msg_thread_id)
+        if message.text == "/ochelp@OniiChanMentionBot":
+            await bot.send_message(message.chat.id, "/all@OniiChanMentionBot - Пинг всех в группе \n/ping@OniiChanMentionBot - Проверка онлайна бота \n/tt@OniiChanMentionBot - Расписание", message_thread_id=msg_thread_id)
 
-        if message.text == "/tt":
+        if message.text == "/tt@OniiChanMentionBot":
 
             markup = types.InlineKeyboardMarkup()
             today = types.InlineKeyboardButton("Сегодня", callback_data='today')

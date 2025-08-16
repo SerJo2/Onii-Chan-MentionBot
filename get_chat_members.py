@@ -13,7 +13,8 @@ async def get_chat_members(chat_id):
     await client.start(bot_token=token)
     chat_members = []
     async for member in client.iter_participants(chat_id):
-        chat_members.append(member.username)
+        if member.username is not None:
+            chat_members.append(member.username)
     await client.disconnect()
     baseLogger.info("Telethon disconnected")
     return chat_members

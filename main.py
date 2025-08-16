@@ -15,9 +15,10 @@ from tabulate import tabulate
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 
-
 from logger import baseLogger
 
+
+##  telegram bot set_my_commands
 
 tz = pytz.timezone('Asia/Vladivostok')
 khabarovskTime = datetime.now(tz)
@@ -26,7 +27,6 @@ data['Time'] = current_date
 print(current_date)
 baseLogger.info("Main.py started")
 API_TOKEN = token
-
 bot = AsyncTeleBot(API_TOKEN)
 baseLogger.info("Bot was set up")
 @bot.message_handler(content_types=['text'])
@@ -41,22 +41,22 @@ async def get_text_messages(message):
             msg_thread_id = "General"
 
 
-        if message.text == "/all":
+        if message.text == "/all@OniiChanMentionBot":
             chat_members = await get_chat_members(message.chat.id)
             baseLogger.info("chat_members: " + str(chat_members))
-            for i in range(1, len(chat_members), 5):
+            for i in range(0, len(chat_members), 5):
                 group = chat_members[i:i+5]
                 send = ""
                 for j in group:
                     k = "@" + j
                     send = send + k + " "
                 await bot.send_message(message.chat.id, send, message_thread_id=msg_thread_id)
-        if message.text == "/ping":
+        if message.text == "/ping@OniiChanMentionBot":
             await bot.send_message(message.chat.id, "Бот работает", message_thread_id=msg_thread_id)
-        if message.text == "/ocHelp":
-            await bot.send_message(message.chat.id, "/all - Пинг всех в группе \n/ping - Проверка онлайна бота \n/tt - Расписание", message_thread_id=msg_thread_id)
+        if message.text == "/ochelp@OniiChanMentionBot":
+            await bot.send_message(message.chat.id, "/all@OniiChanMentionBot - Пинг всех в группе \n/ping@OniiChanMentionBot - Проверка онлайна бота \n/tt@OniiChanMentionBot - Расписание", message_thread_id=msg_thread_id)
 
-        if message.text == "/tt":
+        if message.text == "/tt@OniiChanMentionBot":
 
             markup = types.InlineKeyboardMarkup()
             today = types.InlineKeyboardButton("Сегодня", callback_data='today')
@@ -71,9 +71,9 @@ async def get_text_messages(message):
         if message.chat.id == my_chat_id:
             if message.text == "":
                 pass
-    except BaseException as be:
-        await bot.send_message(message.chat.id, "напишите @psibladeabuzerz \n" + "Что-то пошло не так. Лог ниже \n" % be)
-        baseLogger.critical("Ошибка в get_text_messages", exc_info=True)
+    except BaseException as e:
+        await bot.send_message(message.chat.id, f"Ошибка: {str(e)}. Отпишите @psibladeabuzerz")
+        baseLogger.exception(e)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -86,11 +86,11 @@ async def callback_inline(call):
     tomorrow_date = khabarovskTime + timedelta(days=1)
     tomorrow_date = tomorrow_date.strftime('%d.%m.%Y')
 
+    tag = "@" + str(call.from_user.username)
     try:
         msg_thread_id = call.message.reply_to_message.message_thread_id
     except AttributeError:
         msg_thread_id = "General"
-
 
 
     if "today" in call.data:
@@ -104,7 +104,7 @@ async def callback_inline(call):
                                 i, message_thread_id=msg_thread_id)
         if not yesLessons:
             await bot.send_message(call.message.chat.id,
-                                   "Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tag + "\n\n" + current_date + ": " + "Кажись пар нету", message_thread_id=msg_thread_id)
 
     elif "tomorrow" in call.data:
         data['Time'] = tomorrow_date
@@ -117,14 +117,15 @@ async def callback_inline(call):
                                  i, message_thread_id=msg_thread_id)
         if not yesLessons:
             await bot.send_message(call.message.chat.id,
-                                   "Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tag + "\n\n" + tomorrow_date + ": " +"Кажись пар нету", message_thread_id=msg_thread_id)
 
 def get_timetable_list():
+    print("1")
     responseTimetable = requests.post('https://www.dvgups.ru/index.php', params=params, cookies=cookies, headers=headers, data=data)
     table = responseTimetable.text
 
     printed_list = []
-
+    print("2")
     root = BeautifulSoup(table, 'html.parser')
     all_dates = root.find_all('h3')
     trs = root.find_all('table')

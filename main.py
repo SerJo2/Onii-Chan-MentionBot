@@ -44,7 +44,7 @@ async def get_text_messages(message):
         if message.text == "/all@OniiChanMentionBot":
             chat_members = await get_chat_members(message.chat.id)
             baseLogger.info("chat_members: " + str(chat_members))
-            for i in range(1, len(chat_members), 5):
+            for i in range(0, len(chat_members), 5):
                 group = chat_members[i:i+5]
                 send = ""
                 for j in group:
@@ -71,9 +71,9 @@ async def get_text_messages(message):
         if message.chat.id == my_chat_id:
             if message.text == "":
                 pass
-    except BaseException as be:
-        await bot.send_message(message.chat.id, "напишите @psibladeabuzerz \n" + "Что-то пошло не так. Лог ниже \n" % be)
-        baseLogger.critical("Ошибка в get_text_messages", exc_info=True)
+    except BaseException as e:
+        await bot.send_message(message.chat.id, f"Ошибка: {str(e)}. Отпишите @psibladeabuzerz")
+        baseLogger.exception(e)
 
 
 @bot.callback_query_handler(func=lambda call: True)

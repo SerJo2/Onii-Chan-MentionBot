@@ -29,6 +29,7 @@ baseLogger.info("Main.py started")
 API_TOKEN = token
 bot = AsyncTeleBot(API_TOKEN)
 baseLogger.info("Bot was set up")
+
 @bot.message_handler(content_types=['text'])
 async def get_text_messages(message):
     try:
@@ -50,6 +51,7 @@ async def get_text_messages(message):
                 for j in group:
                     k = "@" + j
                     send = send + k + " "
+                baseLogger.info(send)
                 await bot.send_message(message.chat.id, send, message_thread_id=msg_thread_id)
         if message.text == "/ping@OniiChanMentionBot":
             await bot.send_message(message.chat.id, "Бот работает", message_thread_id=msg_thread_id)

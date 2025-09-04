@@ -33,6 +33,7 @@ baseLogger.info("Bot was set up")
 @bot.message_handler(content_types=['text'])
 async def get_text_messages(message):
     try:
+        # TODO Проверка есть ли юз
         baseLogger.info("message.text: " + str(message.text))
         baseLogger.info("message.chat.id: " + str(message.chat.id))
 

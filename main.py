@@ -10,6 +10,7 @@ import pytz
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from tabulate import tabulate
+import pickle
 
 
 from telebot.async_telebot import AsyncTeleBot
@@ -19,6 +20,11 @@ from logger import baseLogger
 
 
 ##  telegram bot set_my_commands
+# Чтение файла с настройками группы (id;группа)
+with open('data.pickle', 'rb') as f:
+    groupPrefs = pickle.load(f)
+
+print(groupPrefs)
 
 tz = pytz.timezone('Asia/Vladivostok')
 khabarovskTime = datetime.now(tz)
@@ -29,6 +35,10 @@ baseLogger.info("Main.py started")
 API_TOKEN = token
 bot = AsyncTeleBot(API_TOKEN)
 baseLogger.info("Bot was set up")
+
+
+
+
 
 @bot.message_handler(content_types=['text'])
 async def get_text_messages(message):
@@ -58,6 +68,19 @@ async def get_text_messages(message):
             await bot.send_message(message.chat.id, "Бот работает", message_thread_id=msg_thread_id)
         if message.text == "/ochelp@OniiChanMentionBot":
             await bot.send_message(message.chat.id, "/all@OniiChanMentionBot - Пинг всех в группе \n/ping@OniiChanMentionBot - Проверка онлайна бота \n/tt@OniiChanMentionBot - Расписание", message_thread_id=msg_thread_id)
+
+        if message.text == "/prefs@OniiChanMentionBot":
+            await bot.send_message(message.chat.id, "Ответь на это сообщение названием группы, например: БО911ПИА", message_thread_id=msg_thread_id)
+        if message.reply_to_message is not None:
+            if message.reply_to_message.from_user.id == bot_id and (message.reply_to_message.text == "Ответь на это сообщение названием группы, например: БО911ПИА"):
+                groupPrefs[message.chat.id] = message.text.upper().replace(' ', '')
+                with open('data.pickle', 'wb') as f:
+                    pickle.dump(groupPrefs, f)
+                if message.text in groupId:
+                    await bot.send_message(message.chat.id, "Теперь отправляется расписание группы" + " " + message.text, message_thread_id=msg_thread_id)
+                else:
+                    await bot.send_message(message.chat.id, "К сожалению расписание данной группы пока не настроено(или вы ошиблись в написании группы). Но группа присвоена и возможно будет добавлена в расписание", message_thread_id=msg_thread_id)
+
 
         if message.text == "/tt@OniiChanMentionBot":
 
@@ -96,9 +119,20 @@ async def callback_inline(call):
         msg_thread_id = "General"
 
 
+    if call.message.chat.id in groupPrefs:
+        if groupPrefs[call.message.chat.id] in groupId:
+            data['GroupID'] = groupId[groupPrefs[call.message.chat.id]]
+        else:
+            await bot.send_message(call.message.id,"Поддержки данной группы пока что нету :\\", message_thread_id=msg_thread_id)
+            return
+    else:
+        await bot.send_message(call.message.id, "Группа не настроена, настройте её с помощью /prefs@OniiChanMentionBot", message_thread_id=msg_thread_id)
+        return
+
     if "today" in call.data:
         data['Time'] = current_date
         tableList = get_timetable_list()
+        print(tableList)
         yesLessons = False
         for i in tableList:
             if i[:10] == current_date:

@@ -596,3 +596,5 @@ cython_debug/
 #.idea/
 
 /.idea/shelf/Uncommitted_changes_before_Checkout_at_02_06_2025_8_31_[Changes]/shelved.patch
+/allGroupInfo
+/data.pickle

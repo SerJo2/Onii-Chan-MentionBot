@@ -1,4 +1,7 @@
+import re
 from logging import fatal
+
+from festutimetable import FestuApi
 
 from prefs import *
 from get_chat_members import get_chat_members
@@ -11,6 +14,7 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from tabulate import tabulate
 import pickle
+import festutimetable
 
 
 from telebot.async_telebot import AsyncTeleBot
@@ -120,87 +124,42 @@ async def callback_inline(call):
 
 
     if call.message.chat.id in groupPrefs:
-        if groupPrefs[call.message.chat.id] in groupId:
-            data['GroupID'] = groupId[groupPrefs[call.message.chat.id]]
-        else:
-            await bot.send_message(call.message.id,"Поддержки данной группы пока что нету :\\", message_thread_id=msg_thread_id)
-            return
+        group_name = groupPrefs[call.message.chat.id]
     else:
         await bot.send_message(call.message.id, "Группа не настроена, настройте её с помощью /prefs@OniiChanMentionBot", message_thread_id=msg_thread_id)
         return
 
     if "today" in call.data:
-        data['Time'] = current_date
-        tableList = get_timetable_list()
-        print(tableList)
-        yesLessons = False
-        for i in tableList:
-            if i[:10] == current_date:
-                yesLessons = True
-                await bot.send_message(call.message.chat.id,
-                                i, message_thread_id=msg_thread_id)
-        if not yesLessons:
+        i = get_timetable_by_day(group_name, current_date)
+        if len(i) < 10:
             await bot.send_message(call.message.chat.id,
-                                   tag + "\n\n" + current_date + ": " + "Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tag + "\n\n" + current_date + ": " + "Кажись пар нету",
+                                   message_thread_id=msg_thread_id)
+        await bot.send_message(call.message.chat.id,
+                    i, message_thread_id=msg_thread_id)
 
     elif "tomorrow" in call.data:
-        data['Time'] = tomorrow_date
-        tableList = get_timetable_list()
-        yesLessons = False
-        for i in tableList:
-            if i[:10] == tomorrow_date:
-                yesLessons = True
-                await bot.send_message(call.message.chat.id,
-                                 i, message_thread_id=msg_thread_id)
-        if not yesLessons:
+        i = get_timetable_by_day(group_name, tomorrow_date)
+        if len(i) < 10:
             await bot.send_message(call.message.chat.id,
-                                   tag + "\n\n" + tomorrow_date + ": " +"Кажись пар нету", message_thread_id=msg_thread_id)
+                                   tag + "\n\n" + current_date + ": " + "Кажись пар нету",
+                                   message_thread_id=msg_thread_id)
+        await bot.send_message(call.message.chat.id,
+                               i, message_thread_id=msg_thread_id)
 
-def get_timetable_list():
-    print("1")
-    responseTimetable = requests.post('https://www.dvgups.ru/index.php', params=params, cookies=cookies, headers=headers, data=data)
-    table = responseTimetable.text
+def get_timetable_by_day(group: str, date: str):
+    festu_service = FestuApi.TimetableService()
+    k = festu_service.get_timetable_by_day(group, date)
+    ret = ["⚡️⚡️⚡️⚡️⚡️⚡️ \n", k.date]
 
-    printed_list = []
-    print("2")
-    root = BeautifulSoup(table, 'html.parser')
-    all_dates = root.find_all('h3')
-    trs = root.find_all('table')
-    for i in range(len(trs)):
-        printed_table = ""
-        for_root = BeautifulSoup(str(trs[i]), 'html.parser')
-        for_trs = for_root.select_one('table').select('tr')
-        rows = [
-            [td.text for td in tr.select('td')]
-            for tr in for_trs[0:]
-        ]
 
-        final_table = list()
-        for x in range(len(rows)):
-            final_table.append([])
-        ## print(final_table)
-
-        #rows[x][z] - z: 0 - номер пары, z: 1 - что за пара, z: 2 - аудитория, z: 3 - группы, z:4 - препод
-
-        ## print(rows)
-        for j in range(len(rows)):
-            for z in range(len(rows[j])):
-                if z != 3:
-                    final_table[j].append(rows[j][z]) # Убираем бесполезный z: 3, и оставляем все остальное
-
-        ## print(final_table)
-        for_date = str(all_dates[i]) # даты
-
-        ## print(for_date[4:-5])
-        ## print(tabulate(final_table, headers=[], tablefmt="grid"))
-        printed_table += for_date[4:-5].strip().rstrip().rstrip('\n') + "\n" # дата
-        for j in range(len(final_table)):
-            s = ''
-            for z in range(len(final_table[j])):
-                s += final_table[j][z].strip().rstrip().rstrip('\n') + "\n"
-            printed_table += s + "\n"
-        printed_table += "----------------------------------------------" + "\n" # конец расписания текущей даты
-        printed_list.append(printed_table)
-    return printed_list
+    for i in range(len(k.lectures)):
+        if k.lectures[i].teacher == "":
+            ret.append("\n" + k.lectures[i].time + "\n" + re.sub(r'[^а-яА-Я0-9ёЁ ()]', '', k.lectures[i].name) +
+                       k.lectures[i].teacher + "\n" + k.lectures[i].classroom)
+        else:
+            ret.append("\n" + k.lectures[i].time + "\n" + re.sub(r'[^а-яА-Я0-9ёЁ ()]', '', k.lectures[i].name) + "\n" +
+                k.lectures[i].teacher + "\n" + k.lectures[i].classroom)
+    return "\n".join(ret)
 
 asyncio.run(bot.polling())

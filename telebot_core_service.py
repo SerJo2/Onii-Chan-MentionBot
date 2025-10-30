@@ -42,9 +42,10 @@ class TelebotCoreService:
         except:
             raise
 
-    async def _get_message_thread_id(self, message):
+    def _get_message_thread_id(self, message):
         try:
-            return await message.reply_to_message.message_thread_id
+            print(message.reply_to_message.message_thread_id)
+            return message.reply_to_message.message_thread_id
         except AttributeError:
             return "General"
 
@@ -74,7 +75,7 @@ class TelebotCoreService:
         await self.bot.send_message(message.chat.id, help_text.strip(), message_thread_id=message_thread_id)
 
     async def handle_callback(self, call):
-        message_thread_id = await self._get_message_thread_id(call.message)
+        message_thread_id = self._get_message_thread_id(call.message)
         try:
             if str(call.message.chat.id) not in await self.group_storage.load():
                 await self.bot.send_message(

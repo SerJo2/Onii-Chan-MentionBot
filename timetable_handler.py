@@ -10,14 +10,13 @@ from config import BotConfing
 from main import BotCore
 
 
-class TimetableHandler():
+class TimetableHandler:
     def __init__(self):
         self.config = BotConfing.from_env()
         self.timezone = self.config.TIMEZONE
 
     async def get_timetable_for_day(self, group, date):
         try:
-            # Выносим синхронный вызов в отдельный поток
             loop = asyncio.get_event_loop()
             festu_service = TimetableService()
 
@@ -27,7 +26,6 @@ class TimetableHandler():
                 group,
                 date
             )
-
             return self._format_timetable(timetable)
 
         except DateNotFoundError:

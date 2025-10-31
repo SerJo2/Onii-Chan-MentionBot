@@ -108,8 +108,18 @@ class TelebotCoreService:
             today, tomorrow = await self.timetable_service.get_dates()
 
             if call.data == 'today':
+                sent_message = await self.bot.send_message(
+                    call.message.chat.id,
+                    "Запрос на сайт отправлен, ожидайте",
+                    message_thread_id=message_thread_id
+                )
                 timetable_text = await self.timetable_service.get_timetable_for_day(group_name, today)
             elif call.data == 'tomorrow':
+                sent_message = await self.bot.send_message(
+                    call.message.chat.id,
+                    "Запрос на сайт отправлен, ожидайте",
+                    message_thread_id=message_thread_id
+                )
                 timetable_text = await self.timetable_service.get_timetable_for_day(group_name, tomorrow)
             else:
                 return
@@ -117,6 +127,8 @@ class TelebotCoreService:
             # Добавляем упоминание пользователя
             user_mention = f"@{call.from_user.username}" if call.from_user.username else call.from_user.first_name
             response = f"{user_mention}\n\n{timetable_text}"
+
+            await self.bot.delete_message(sent_message.chat.id, sent_message.id)
 
             await self.bot.send_message(
                 call.message.chat.id,

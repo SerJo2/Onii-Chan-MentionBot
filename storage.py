@@ -30,5 +30,5 @@ class GroupPreferences:
 
     async def set_group(self, chat_id: int, group: str):
         prefs = await self.load()
-        prefs[chat_id] = group.upper().replace(' ', '')
+        prefs[str(chat_id)] = group.upper().replace(' ', '')
         await self.save(prefs)

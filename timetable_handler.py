@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import re
+from venv import logger
 
 import pytz
 from festutimetable import TimetableService
@@ -11,9 +12,10 @@ from main import BotCore
 
 
 class TimetableHandler:
-    def __init__(self):
+    def __init__(self, main_logger):
         self.config = BotConfing.from_env()
         self.timezone = self.config.TIMEZONE
+        self.logger = main_logger
 
     async def get_timetable_for_day(self, group, date):
         try:
@@ -33,6 +35,7 @@ class TimetableHandler:
         except GroupNotFoundError:
             return "❌ Группа не найдена. Проверьте правильность написания."
         except Exception as e:
+            self.logger.error("Лшибка при получении расписания: ", str(e))
             return "⚠️ Произошла ошибка при получении расписания"
 
     def _format_timetable(self, timetable):

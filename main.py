@@ -1,12 +1,15 @@
 import asyncio
+from threading import main_thread
 
 import telebot_core_service
+from logger import base_logger
 
 class BotCore:
-    def __init__(self):
-        self.telebot_service = telebot_core_service.TelebotCoreService()
-
+    def __init__(self, main_logger: base_logger):
+        self.logger = main_logger
+        self.telebot_service = telebot_core_service.TelebotCoreService(self.logger)
         self._register_handlers()
+
 
     def _register_handlers(self):
         """Регистрация обработчиков"""
@@ -19,7 +22,8 @@ class BotCore:
 
 
 async def main():
-    bot = BotCore()
+    main_logger = base_logger('Onii-Chan', 'Onii-Chan.log')
+    bot = BotCore(main_logger)
     await bot.run()
 
 if __name__ == "__main__":

@@ -1,26 +1,42 @@
-from telebot import types
+from telebot import types, logger
 from telebot.async_telebot import AsyncTeleBot
 from config import BotConfing
 from telethon_service import TelethonService
 from storage import GroupPreferences
 from timetable_handler import TimetableHandler
+from logger import base_logger
 
 class TelebotCoreService:
 
-    def __init__(self):
+    def __init__(self, main_logger):
+        self.logger = main_logger
         self.config = BotConfing.from_env()
         self.bot = AsyncTeleBot(self.config.API_TOKEN)
-        self.telethon_bot = TelethonService(self.config.API_ID, self.config.API_HASH)
-        self.group_storage = GroupPreferences()
-        self.timetable_service = TimetableHandler()
+        self.telethon_bot = TelethonService(self.config.API_ID, self.config.API_HASH, self.config.API_TOKEN, self.logger)
+        self.group_storage = GroupPreferences(self.logger)
+        self.timetable_service = TimetableHandler(self.logger)
+
 
     async def run(self):
+        self.logger.info("Запуск бота...")
         try:
-            await self.bot.infinity_polling()
+            # Подключаем Telethon
+            await self.telethon_bot.connect()
+
+            # Запускаем бота
+            await self.bot.polling()
+
         except Exception as e:
+            self.logger.error(f"Критическая ошибка: {e}")
             raise
+        finally:
+            # Всегда отключаем Telethon при завершении
+            await self.telethon_bot.disconnect()
+
+        self.logger.info("Bot started up")
 
     async def handle_text_message(self, message):
+        self.logger.info("Bot handled text message: " + message.text + " chat.id and thread: " + str(message.chat.id) + " from " + f"@{message.from_user.username}" if message.from_user.username else message.from_user.first_name)
         try:
             message_thread_id = self._get_message_thread_id(message)
 
@@ -40,6 +56,7 @@ class TelebotCoreService:
                 await self._handle_reply(message, message_thread_id)
 
         except:
+            self.logger.error("Handle text message error")
             raise
 
     def _get_message_thread_id(self, message):
@@ -50,11 +67,13 @@ class TelebotCoreService:
             return "General"
 
     async def _handle_all_command(self, message, message_thread_id):
-        chat_members = await self.telethon_bot.get_chat_members(message)
+        chat_members = await self.telethon_bot.get_chat_members(message.chat.id)
+        print(chat_members)
+        chat_members = await self.telethon_bot.get_chat_members(message.chat.id)
         for i in range(0, len(chat_members), 5):
             group = chat_members[i:i + 5]
             send = ""
-            async for j in group:
+            for j in group:
                 k = "@" + j
                 send = send + k + " "
             await self.bot.send_message(message.chat.id, send, message_thread_id=message_thread_id)
@@ -106,6 +125,7 @@ class TelebotCoreService:
             )
 
         except Exception as e:
+            self.logger.error("Callback handle error: ", str(e))
             await self._handle_error(e, call.message, message_thread_id)
 
 

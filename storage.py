@@ -9,8 +9,9 @@ import pytz
 
 class GroupPreferences:
 
-    def __init__(self, file_path: str = "data.json"):
+    def __init__(self, logger, file_path: str = "data.json"):
         self.file_path = Path(file_path)
+        self.logger = logger
 
     async def load(self) -> Dict[int, str]:
         try:

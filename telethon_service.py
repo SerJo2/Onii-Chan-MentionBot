@@ -41,11 +41,13 @@ class TelethonService:
 
     async def ensure_connected(self):
         """Убедиться, что клиент подключен"""
+        self.logger.info("Start ensure_connected")
         if not self.is_connected or not self.client:
             await self.connect()
 
     async def get_chat_members(self, chat_id):
         """Получить список участников чата"""
+        self.logger.info("Start get_chat_members")
         try:
             await self.ensure_connected()
 

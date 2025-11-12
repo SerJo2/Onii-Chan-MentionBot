@@ -18,7 +18,7 @@ class TelebotCoreService:
 
 
     async def run(self):
-        self.logger.info("Запуск бота...")
+        self.logger.info("Bot starting...")
         try:
             # Подключаем Telethon
             await self.telethon_bot.connect()
@@ -27,7 +27,7 @@ class TelebotCoreService:
             await self.bot.polling()
 
         except Exception as e:
-            self.logger.error(f"Критическая ошибка: {e}")
+            self.logger.error(f"Critical error when starting bot: {e}")
             raise
         finally:
             # Всегда отключаем Telethon при завершении
@@ -55,11 +55,12 @@ class TelebotCoreService:
             elif message.reply_to_message:
                 await self._handle_reply(message, message_thread_id)
 
-        except:
-            self.logger.error("Handle text message error")
+        except Exception as e:
+            self.logger.error("Handle text message error: ", str(e))
             raise
 
-    def _get_message_thread_id(self, message):
+    @staticmethod
+    def _get_message_thread_id(message):
         try:
             print(message.reply_to_message.message_thread_id)
             return message.reply_to_message.message_thread_id
@@ -124,7 +125,7 @@ class TelebotCoreService:
             else:
                 return
 
-            # Добавляем упоминание пользователя
+
             user_mention = f"@{call.from_user.username}" if call.from_user.username else call.from_user.first_name
             response = f"{user_mention}\n\n{timetable_text}"
 
@@ -165,6 +166,7 @@ class TelebotCoreService:
     async def _handle_reply(self, message, message_thread_id):
         if (message.reply_to_message and
                 message.reply_to_message.text == "✏️ Ответьте на это сообщение названием группы, например: БО911ПИА"):
+            print("test")
             await self.group_storage.set_group(message.chat.id, message.text)
             await self.bot.send_message(
                 message.chat.id,
@@ -173,6 +175,7 @@ class TelebotCoreService:
             )
 
     async def _handle_error(self, error, message, message_thread_id):
+        self.logger.error("Error handler: ", str(error))
         await self.bot.send_message(
             message.chat.id,
             f"❌ Произошла ошибка: {str(error)}\n\n📞 Свяжитесь с @psibladeabuzerz",

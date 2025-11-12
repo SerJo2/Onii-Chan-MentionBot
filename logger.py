@@ -5,7 +5,7 @@ def base_logger(name, log_file, level=logging.INFO):
     """Sets up a logger with the specified name, file, and level."""
     logging.basicConfig(
         filename='app.log',  # Имя файла для логов
-        level=logging.DEBUG,
+        level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         encoding='utf-8'  # Явно указываем кодировку
     )

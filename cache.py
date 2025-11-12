@@ -2,21 +2,45 @@ import time
 import asyncio
 from typing import Any, Optional, Dict
 from datetime import datetime, timedelta
-import logging
 
 
 class MemoryCache:
+    """Class for storing cache for timetable
 
-    def __init__(self, default_ttl: int = 3600):  # 1 час по умолчанию
+    """
+
+    def __init__(self, main_logger, default_ttl: int = 3600):
+        """Initialize MemoryCache
+        Args:
+            main_logger: Used logger
+            default_ttl: ttl time
+        """
         self.default_ttl = default_ttl
         self._cache: Dict[str, Dict[str, Any]] = {}
-        self.logger = logging.getLogger('MemoryCache')
+        self.logger = main_logger
 
     def _get_key(self, group: str, date: str) -> str:
+        """Get key
+        Args:
+            group (str): Group name
+            date (str): Date
+
+        Returns:
+            str: key for group
+        """
 
         return f"{group}_{date}"
 
     def get(self, group: str, date: str) -> Optional[Any]:
+        """
+
+        Args:
+            group:
+            date:
+
+        Returns:
+
+        """
 
         key = self._get_key(group, date)
 

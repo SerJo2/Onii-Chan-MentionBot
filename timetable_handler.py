@@ -13,20 +13,33 @@ from main import BotCore
 
 
 class TimetableHandler:
-    def __init__(self, main_logger, cache_ttl=3600):
+    """Handle all Timetable actions
+
+    """
+    def __init__(self, main_logger, cache_ttl=43200):
+        """TimetableHandler initialize
+
+        Args:
+            main_logger : Logger for usage
+            cache_ttl: ttl time
+        """
         self.config = BotConfing.from_env()
         self.timezone = self.config.TIMEZONE
         self.logger = main_logger
 
-        self.cache = MemoryCache(default_ttl=cache_ttl)
+        self.cache = MemoryCache(self.logger, default_ttl=cache_ttl)
 
         self._start_cache_cleanup()
 
     def _start_cache_cleanup(self):
+        """Cleanup expired cache every 300 secs
+
+        """
+        self.logger.info("Cache cleanup")
 
         async def cleanup_task():
             while True:
-                await asyncio.sleep(300)  # Каждые 5 минут
+                await asyncio.sleep(300)
                 self.cache.clear_expired()
                 stats = self.cache.get_stats()
                 self.logger.debug(f"Статистика кэша: {stats}")
@@ -34,6 +47,17 @@ class TimetableHandler:
         asyncio.create_task(cleanup_task())
 
     async def get_timetable_for_day(self, group, date):
+        """
+
+        Args:
+            group (str): Name of group
+            date (str): Date
+
+        Returns:
+            object:
+
+        """
+        self.logger.info("start get_timetable_for_day")
         try:
 
             cached_result = self.cache.get(group, date)
@@ -99,7 +123,8 @@ class TimetableHandler:
 
         return "\n".join(lines)
 
-    def _clean_text(self, text):
+    @staticmethod
+    def _clean_text(text):
         return re.sub(r'[^а-яА-Я0-9ёЁ ()]', '', text)
 
     async def get_dates(self) -> tuple[str, str]:
